@@ -9,12 +9,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
+app.use(express.json({}));
 
-app.use('/', (req, res) => {
-  res.render('index.html');
+app.get('/websocket', (req, res) => {
+  res.render('websocket.html');
+});
+app.get('/http', (req, res) => {
+  res.render('http.html');
 });
 
 const messages = [];
+
+app.get('/messages', (req, res) => {
+  return res.json(messages);
+});
+
+app.post('/messages', (req, res) => {
+  messages.push(req.body);
+
+  return res.json(messages);
+});
 
 io.on('connection', (socket) => {
   console.log(`new socket connected! ${socket.id}`);
